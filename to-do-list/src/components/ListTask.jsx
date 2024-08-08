@@ -75,21 +75,23 @@ function ListTask({ tasks }) {
 
         axiosClient
             .post("/tasks", {
-                selectedCategory,
-                newTasks,
-                taskTitle,
+                category: selectedCategory,
+                tasks: newTasks,
+                task_title: taskTitle,
             })
-            .then((data) => {
-                console.log("positive");
+            .then(({ data }) => {
                 console.log(data);
             })
             .catch((err) => {
-                console.log("negative");
                 const response = err.response;
                 if (response && response.status === 422) {
                     console.log(response.status);
                 }
             });
+
+        // console.log(selectedCategory);
+        // console.log(newTasks);
+        // console.log(taskTitle);
     };
 
     return (
@@ -146,9 +148,15 @@ function ListTask({ tasks }) {
                                         >
                                             <option value="">Category</option>{" "}
                                             {/* Use empty string for default option */}
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
+                                            <option value="Health">
+                                                Health
+                                            </option>
+                                            <option value="Grocery">
+                                                Grocery
+                                            </option>
+                                            <option value="Personal">
+                                                Personal
+                                            </option>
                                         </select>
                                     </div>
 
