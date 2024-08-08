@@ -3,7 +3,7 @@ import { faSquarePlus, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import axiosClient from "../axios-client";
 
 function ListTask({ tasks }) {
     function formatDate(dateString) {
@@ -72,23 +72,24 @@ function ListTask({ tasks }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/tasks",
-                {
-                    selectedCategory,
-                    newTasks,
-                    taskTitle,
-                }
-            );
-            console.log(response.data);
-        } catch (error) {
-            console.error(error);
-        }
 
-        console.log(selectedCategory);
-        console.log(taskTitle);
-        console.log(newTasks);
+        axiosClient
+            .post("/tasks", {
+                selectedCategory,
+                newTasks,
+                taskTitle,
+            })
+            .then((data) => {
+                console.log("positive");
+                console.log(data);
+            })
+            .catch((err) => {
+                console.log("negative");
+                const response = err.response;
+                if (response && response.status === 422) {
+                    console.log(response.status);
+                }
+            });
     };
 
     return (
