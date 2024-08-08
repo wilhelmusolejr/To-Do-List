@@ -9,7 +9,7 @@ class TaskTitle extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category', 'date', 'user_id'];
+    protected $fillable = ['category', 'task_title', 'date', 'user_id'];
 
     public function tasks()
     {

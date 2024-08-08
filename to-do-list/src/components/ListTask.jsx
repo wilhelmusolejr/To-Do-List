@@ -83,10 +83,7 @@ function ListTask({ tasks }) {
                 console.log(data);
             })
             .catch((err) => {
-                const response = err.response;
-                if (response && response.status === 422) {
-                    console.log(response.status);
-                }
+                console.log(err.response.data);
             });
 
         // console.log(selectedCategory);

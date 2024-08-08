@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\Task;
 use App\Models\TaskTitle;
 use Illuminate\Http\Request;
-use Laravel\Passport\HasApiTokens;
 
 class TaskController extends Controller
 {
@@ -20,7 +18,8 @@ class TaskController extends Controller
 
         $taskTitle = TaskTitle::create([
             'category' => $request->category,
-            'date' => Carbon::now(),
+            'task_title' => $request -> task_title,
+             'date' => Carbon::now(),
             'user_id' => 1, // Or dynamically set based on authenticated user
         ]);
 
