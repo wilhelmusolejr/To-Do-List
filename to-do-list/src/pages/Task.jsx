@@ -3,157 +3,62 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { faSquare, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
 import Navigator from "../components/Navigator";
 import { useParams, Link } from "react-router-dom";
+import { useStateContext } from "../contexts/ContextProvider";
+import { useEffect, useState } from "react";
+import axiosClient from "../axios-client";
+import Loader from "../components/Loader";
 
 function Task() {
+    const { user } = useStateContext();
     const { id } = useParams();
+    const [individualTask, setindividualTask] = useState([]);
+    const [task, setTask] = useState([]);
+    const [loading, setLoading] = useState(true); // Add loading state
 
-    let tasks = [
-        {
-            id: 1,
-            category: "Personal",
-            date: "2024-08-06",
-        },
-        {
-            id: 2,
-            category: "Work",
-            date: "2024-08-06",
-        },
-        {
-            id: 3,
-            category: "Health",
-            date: "2024-08-06",
-        },
-        {
-            id: 4,
-            category: "Home",
-            date: "2024-08-03",
-        },
-        {
-            id: 5,
-            category: "Work",
-            date: "2024-08-03",
-        },
-        {
-            id: 6,
-            category: "Personal",
-            date: "2024-08-03",
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true); // Start loading
 
-    let individualTask = [
-        {
-            id: 1,
-            task: [
-                { id: 1, description: "Read a book", isDone: true },
-                { id: 2, description: "Attend the meeting", isDone: false },
-                { id: 3, description: "Clean the house", isDone: true },
-                { id: 4, description: "Plan the trip", isDone: false },
-                { id: 5, description: "Write a blog post", isDone: true },
-            ],
-        },
-        {
-            id: 2,
-            task: [
-                { id: 1, description: "Buy groceries", isDone: false },
-                { id: 2, description: "Exercise for 30 minutes", isDone: true },
-                { id: 3, description: "Complete the report", isDone: false },
-            ],
-        },
-        {
-            id: 3,
-            task: [
-                { id: 1, description: "Call the doctor", isDone: true },
-                { id: 2, description: "Pay bills", isDone: false },
-                { id: 3, description: "Attend the meeting", isDone: true },
-                { id: 4, description: "Plan the trip", isDone: false },
-                { id: 5, description: "Read a book", isDone: true },
-                { id: 6, description: "Clean the house", isDone: false },
-                { id: 7, description: "Write a blog post", isDone: true },
-            ],
-        },
-        {
-            id: 4,
-            task: [
-                {
-                    id: 1,
-                    description: "Exercise for 30 minutes",
-                    isDone: false,
-                },
-                { id: 2, description: "Call the doctor", isDone: true },
-                { id: 3, description: "Pay bills", isDone: false },
-            ],
-        },
-        {
-            id: 5,
-            task: [
-                { id: 1, description: "Plan the trip", isDone: true },
-                { id: 2, description: "Complete the report", isDone: false },
-                { id: 3, description: "Exercise for 30 minutes", isDone: true },
-                { id: 4, description: "Call the doctor", isDone: false },
-                { id: 5, description: "Attend the meeting", isDone: true },
-                { id: 6, description: "Buy groceries", isDone: false },
-            ],
-        },
-        {
-            id: 6,
-            task: [
-                { id: 1, description: "Pay bills", isDone: true },
-                { id: 2, description: "Attend the meeting", isDone: false },
-                { id: 3, description: "Plan the trip", isDone: true },
-                { id: 4, description: "Clean the house", isDone: false },
-            ],
-        },
-        {
-            id: 7,
-            task: [
-                { id: 1, description: "Read a book", isDone: true },
-                { id: 2, description: "Buy groceries", isDone: false },
-                { id: 3, description: "Complete the report", isDone: true },
-                { id: 4, description: "Plan the trip", isDone: false },
-            ],
-        },
-        {
-            id: 8,
-            task: [
-                {
-                    id: 1,
-                    description: "Exercise for 30 minutes",
-                    isDone: false,
-                },
-                { id: 2, description: "Attend the meeting", isDone: true },
-                { id: 3, description: "Write a blog post", isDone: false },
-                { id: 4, description: "Buy groceries", isDone: true },
-                { id: 5, description: "Plan the trip", isDone: false },
-            ],
-        },
-        {
-            id: 9,
-            task: [
-                { id: 1, description: "Clean the house", isDone: true },
-                { id: 2, description: "Complete the report", isDone: false },
-                { id: 3, description: "Read a book", isDone: true },
-                { id: 4, description: "Attend the meeting", isDone: false },
-                { id: 5, description: "Plan the trip", isDone: true },
-                { id: 6, description: "Call the doctor", isDone: false },
-            ],
-        },
-        {
-            id: 10,
-            task: [
-                { id: 1, description: "Buy groceries", isDone: true },
-                { id: 2, description: "Write a blog post", isDone: false },
-                { id: 3, description: "Complete the report", isDone: true },
-            ],
-        },
-    ];
+            try {
+                // Fetch task title
+                const taskResponse = await axiosClient.post("/userTaskTitle", {
+                    task_id: id,
+                });
+                setTask(taskResponse.data.task_title);
 
-    let completeTask = {};
-    completeTask.taskInfo = tasks.find((task) => task.id === parseInt(id));
-    completeTask.task = individualTask.find((task) => task.id === parseInt(id));
+                // Fetch individual tasks
+                const individualTasksResponse = await axiosClient.post(
+                    "/userTasks",
+                    {
+                        task_id: id,
+                    }
+                );
+                setindividualTask(individualTasksResponse.data.tasks);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false); // End loading
+            }
+        };
+
+        if (id) {
+            fetchData();
+        }
+    }, [id]);
+
+    // Show loading indicator if data is not yet loaded
+    if (loading) {
+        return (
+            <>
+                <Navigator />
+                <Loader />
+            </>
+        );
+    }
 
     return (
         <>
-            <Navigator></Navigator>
+            <Navigator />
 
             <section className="container my-5">
                 <div className="d-flex flex-wrap justify-content-sm-between justify-content-center align-items-center gap-3">
@@ -170,10 +75,10 @@ function Task() {
                     </div>
                 </div>
 
-                <h2 className="my-4">{completeTask.taskInfo.category}</h2>
+                <h2 className="my-4">{task.task_title}</h2>
 
                 <div className="list-actual-task d-flex flex-column gap-3">
-                    {completeTask.task.task.map((individualTask) => (
+                    {individualTask.map((individualTask) => (
                         <div
                             key={individualTask.id}
                             className="rounded border border-dark p-3 d-flex align-items-center shadow-sm"

@@ -2,34 +2,44 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosClient from "../axios-client";
+import { useStateContext } from "../contexts/ContextProvider";
 
-function ListTask({ tasks }) {
+function ListTask({ tasks, setTasks }) {
     function formatDate(dateString) {
         const options = { year: "numeric", month: "long", day: "2-digit" };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
 
-    // Group tasks by date
-    const groupedTasks = tasks.reduce((acc, task) => {
-        const date = task.date;
-        if (!acc[date]) {
-            acc[date] = [];
-        }
-        acc[date].push(task);
-        return acc;
-    }, {});
-
-    // Transform grouped tasks into an array of objects
-    const result = Object.keys(groupedTasks).map((date) => ({
-        date,
-        tasks: groupedTasks[date],
-    }));
+    const { user } = useStateContext();
 
     const [selectedCategory, setSelectedCategory] = useState("");
     const [taskTitle, setTaskTitle] = useState("");
     const [newTasks, setNewTasks] = useState([""]);
+    const [result, setResult] = useState([]);
+
+    useEffect(() => {
+        if (tasks.length > 0) {
+            // Group tasks by date
+            const groupedTasks = tasks.reduce((acc, task) => {
+                const date = task.date.split(" ")[0];
+                if (!acc[date]) {
+                    acc[date] = [];
+                }
+                acc[date].push(task);
+                return acc;
+            }, {});
+
+            // Transform grouped tasks into an array of objects
+            const formattedResult = Object.keys(groupedTasks).map((date) => ({
+                date: formatDate(date),
+                tasks: groupedTasks[date],
+            }));
+
+            setResult(formattedResult);
+        }
+    }, [tasks]);
 
     // Handler for select change
     const handleCategory = (event) => {
@@ -73,22 +83,19 @@ function ListTask({ tasks }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        axiosClient
+        await axiosClient
             .post("/tasks", {
                 category: selectedCategory,
                 tasks: newTasks,
                 task_title: taskTitle,
+                user_id: user.id,
             })
-            .then(({ data }) => {
-                console.log(data);
+            .then((data) => {
+                console.log(data.data.task_title);
             })
             .catch((err) => {
-                console.log(err.response.data);
+                console.log(err);
             });
-
-        // console.log(selectedCategory);
-        // console.log(newTasks);
-        // console.log(taskTitle);
     };
 
     return (

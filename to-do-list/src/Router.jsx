@@ -3,9 +3,24 @@ import Task from "./pages/Task";
 import Dashboard from "./pages/Dashboard";
 import GuestLayout from "./components/GuestLayout";
 import DefaultLayout from "./components/DefaultLayout";
-import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const Router = createBrowserRouter([
+    {
+        path: "/",
+        element: <GuestLayout />,
+        children: [
+            {
+                path: "/login",
+                element: <Login />,
+            },
+            {
+                path: "/register",
+                element: <Register />,
+            },
+        ],
+    },
     {
         path: "/",
         element: <DefaultLayout />,
@@ -17,16 +32,6 @@ const Router = createBrowserRouter([
             {
                 path: "/task/:id",
                 element: <Task />,
-            },
-        ],
-    },
-    {
-        path: "/",
-        element: <GuestLayout />,
-        children: [
-            {
-                path: "/home",
-                element: <Home />,
             },
         ],
     },

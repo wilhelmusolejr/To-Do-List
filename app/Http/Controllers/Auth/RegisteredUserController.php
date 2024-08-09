@@ -18,8 +18,9 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request)
     {
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -36,6 +37,13 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return response()->noContent();
+        // Generate a new token for the user (assuming you're using Laravel Sanctum for API tokens)
+        $token = true;
+
+        // Return the user data and the token
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
     }
 }
