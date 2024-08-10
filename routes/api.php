@@ -14,4 +14,6 @@ Route::post('/userTaskTitles', [TaskController::class, 'getUserTaskTitles']);
 Route::post('/userTaskTitle', [TaskController::class, 'getUserTaskTitle']);
 Route::post('/userTasks', [TaskController::class, 'getUserTasks']);
 Route::post('/deleteEntiretask', [TaskController::class, 'deleteEntireTask']);
+Route::post('/updateTask', [TaskController::class, 'updateTask']);
+Route::post('/updateTaskStatus', [TaskController::class, 'updateTaskStatus']);
 Route::post('/register', [RegisteredUserController::class, 'store']);

@@ -146,4 +146,41 @@ class TaskController extends Controller
 
         return response()->json(['message' => 'Task deleted successfully.'], 200);
     }
+
+    public function updateTask(Request $request) {
+        $task_id = $request -> task_id;
+        $user_id = $request -> user_id;
+
+        // Retrieve the task titles along with their related tasks
+        $taskTitle = TaskTitle::where('user_id', $user_id)
+        ->where('id', $task_id)
+        ->first();
+
+        // if ($taskTitle) {
+        //     $taskTitle->task_title = $request->input('task_title');
+        //     $taskTitle->save();
+        // }
+
+        // return response()->json([
+        //     'message' => 'Task title updated successfully',
+        //     'taskTitle' => $taskTitle
+        // ], 200);
+
+        return $request;
+    }
+
+
+    public function updateTaskStatus(Request $request) {
+        $task_id = $request -> task_id;
+
+        $task = Task::where('id', $task_id)
+        ->first();
+
+         if ($task) {
+            $task->is_done = $task -> is_done ? 0 : 1;
+            $task->save();
+        }
+
+        return $task;
+    }
 }

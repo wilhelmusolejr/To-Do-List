@@ -59,7 +59,6 @@ function Dashboard() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [taskTitle, setTaskTitle] = useState("");
     const [newTasks, setNewTasks] = useState([""]);
-    const [result, setResult] = useState([]);
 
     // Handler for select change
     const handleCategory = (event) => {
@@ -361,7 +360,7 @@ function Dashboard() {
                                     <Link
                                         key={individualTaskIndex}
                                         to={`/task/${individualTask.id}`}
-                                        className={`task shadow-sm rounded cursor-pointer text-black ${
+                                        className={`task shadow-sm rounded cursor-pointer text-black border ${
                                             individualTask.status["is_complete"]
                                                 ? "bg-light-primary"
                                                 : ""
