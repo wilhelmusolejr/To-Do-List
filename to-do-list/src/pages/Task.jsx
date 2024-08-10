@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { faSquare, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
+import { faArrowLeft, faSquareCheck } from "@fortawesome/free-solid-svg-icons";
+
+import { faSquare } from "@fortawesome/free-regular-svg-icons";
 import Navigator from "../components/Navigator";
 import { useParams, Link } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
@@ -33,6 +34,9 @@ function Task() {
                         task_id: id,
                     }
                 );
+
+                console.log(individualTasksResponse.data.tasks);
+
                 setindividualTask(individualTasksResponse.data.tasks);
             } catch (err) {
                 console.error(err);
@@ -77,15 +81,15 @@ function Task() {
 
                 <h2 className="my-4">{task.task_title}</h2>
 
-                <div className="list-actual-task d-flex flex-column gap-3">
+                <div className="list-actual-task d-flex flex-column gap-3 ">
                     {individualTask.map((individualTask) => (
                         <div
                             key={individualTask.id}
-                            className="rounded border border-dark p-3 d-flex align-items-center shadow-sm"
+                            className="rounded border border-dark p-3 d-flex align-items-center shadow-sm bg-light-primary"
                         >
                             <FontAwesomeIcon
                                 icon={
-                                    individualTask.isDone
+                                    individualTask.is_done
                                         ? faSquareCheck
                                         : faSquare
                                 }

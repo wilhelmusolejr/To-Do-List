@@ -6,6 +6,7 @@
 
     --green-color: #018749;
     --light-green-color: #ace1af;
+    --light-light-green-color: #e1f5e1;
 
     --light-dark-color: #555;
     --dark-color: #111;
@@ -15,6 +16,9 @@
 
 .bg-primary {
     background-color: var(--green-color) !important;
+}
+.bg-light-primary {
+    background-color: var(--light-light-green-color) !important;
 }
 .bg-light-white {
     background-color: var(--light-white-color) !important;

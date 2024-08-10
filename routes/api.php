@@ -16,4 +16,4 @@ Route::post('/userTasks', [TaskController::class, 'getUserTasks']);
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
 
-Route::post('/test', [TaskController::class, 'test']);
+Route::get('/test', [TaskController::class, 'test']);

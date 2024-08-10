@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../components/Loader";
 
 function Dashboard() {
@@ -28,21 +28,20 @@ function Dashboard() {
                     user_id: user.id,
                 })
                 .then((data) => {
-                    const temp_tasks = data.data.task_titles;
+                    // Convert the object into an array of [date, tasks] pairs
+                    const dateTasksArray = Object.entries(
+                        data.data.task_titles
+                    );
 
-                    const groupedTasks = temp_tasks.reduce((acc, task) => {
-                        const date = task.date.split(" ")[0];
-                        if (!acc[date]) {
-                            acc[date] = [];
-                        }
-                        acc[date].push(task);
-                        return acc;
-                    }, {});
+                    // Use .map() to iterate over the array
+                    const result = dateTasksArray.map(([date, tasks]) => {
+                        return {
+                            date: date,
+                            tasks: tasks, // tasks is an array of task titles and tasks
+                        };
+                    });
 
-                    const result = Object.keys(groupedTasks).map((date) => ({
-                        date,
-                        tasks: groupedTasks[date],
-                    }));
+                    console.log(result);
 
                     setTasks(result);
                     setLoading(false); // Stop loading when data is fetched
@@ -362,12 +361,22 @@ function Dashboard() {
                                     <Link
                                         key={individualTaskIndex}
                                         to={`/task/${individualTask.id}`}
-                                        className="task shadow-sm rounded cursor-pointer text-black"
+                                        className={`task shadow-sm rounded cursor-pointer text-black ${
+                                            individualTask.status["is_complete"]
+                                                ? "bg-light-primary"
+                                                : ""
+                                        }`}
                                     >
                                         <div className="emoji-parent text-center d-flex flex-column justify-content-center align-items-center">
                                             <div className="emoji rounded-circle d-flex justify-content-center align-items-center mb-2 shadow-sm">
                                                 <FontAwesomeIcon
-                                                    icon={faSquarePlus}
+                                                    icon={
+                                                        individualTask.status[
+                                                            "is_complete"
+                                                        ]
+                                                            ? faCheck
+                                                            : faSquarePlus
+                                                    }
                                                 />
                                             </div>
                                             <p className="fs-5 text-capitalize">
@@ -381,7 +390,9 @@ function Dashboard() {
                                             </p>
                                         </div>
                                         <p className="task-info">
-                                            1/2 Task Completed
+                                            {individualTask.status["done"]}/
+                                            {individualTask.status["total"]}{" "}
+                                            Task Completed
                                         </p>
                                     </Link>
                                 )
