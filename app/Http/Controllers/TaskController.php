@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\TaskTitle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use League\CommonMark\Extension\TaskList\TaskListItemMarker;
 
 class TaskController extends Controller
 {
@@ -118,63 +119,31 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function test(Request $request) {
-        // Get the currently authenticated user
-        $userId = $request->user_id;
+    public function deleteEntireTask(Request $request) {
+        $task_id = $request -> task_id;
+        $user_id = $request -> user_id;
 
-        // Fetch the latest task titles associated with the logged-in user, including tasks
-        $taskTitles = TaskTitle::with('tasks') // Eager load related tasks
-            ->where('user_id', $userId)
-            ->orderBy('created_at', 'desc') // Sort by creation date in descending order
-            ->get();
+        // Retrieve the task titles along with their related tasks
+        $taskTitles = TaskTitle::with('tasks')
+        ->where('user_id', $user_id)
+        ->where('id', $task_id)
+        ->get();
 
-        $temp_titles = [];
-
-        foreach($taskTitles as $taskTitle) {
-            $date = new DateTime($taskTitle->date);
-            $formattedDate = $date->format('F d, Y'); // Formats to "August 09, 2024"
-
-            if (!array_key_exists($formattedDate, $temp_titles)) {
-                $temp_titles[$formattedDate] = []; // Push $formattedDate with an empty array
-            }
+        // Check if records are found
+        if ($taskTitles->isEmpty()) {
+        return response()->json(['message' => 'No records found.'], 404);
         }
 
-        foreach($taskTitles as $taskTitle) {
-            $date = new DateTime($taskTitle -> date);
-            $formattedDate = $date->format('F d, Y');
-
-            forEach($temp_titles as $date => $temp_title) {
-                if($date === $formattedDate) {
-                    array_push($temp_titles[$date], $taskTitle);
-                }
-            }
+        // Delete related tasks first
+        foreach ($taskTitles as $taskTitle) {
+        Task::where('task_title_id', $taskTitle->id)->delete();
         }
 
-        foreach ($temp_titles as $date => $taskTitles) {
-            foreach ($taskTitles as &$taskTitle) {
+        // Delete the task titles
+        TaskTitle::where('user_id', $user_id)
+        ->where('id', $task_id)
+        ->delete();
 
-                $temp = [
-                    'done' => 0,
-                    'total' => count($taskTitle->tasks), // Assuming tasks is an array
-                ];
-
-                foreach($taskTitle -> tasks as $individual) {
-                    if($individual['is_done'] != 0) {
-                        $temp['done'] += 1;
-                    }
-                }
-
-                $taskTitle['test'] = $temp;
-            }
-
-            // If you need to reset the reference after use
-            unset($taskTitle); // Optional, to avoid accidental references
-        }
-
-        dd($temp_titles);
-
-        return response()->json([
-            'task_titles' => $temp_titles
-        ], 200);
+        return response()->json(['message' => 'Task deleted successfully.'], 200);
     }
 }

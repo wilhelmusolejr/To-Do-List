@@ -8,13 +8,17 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
 import Loader from "../components/Loader";
+import MiddleContainer from "../components/MiddleContainer";
 
 function Task() {
     const { user } = useStateContext();
     const { id } = useParams();
     const [individualTask, setindividualTask] = useState([]);
     const [task, setTask] = useState([]);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
+
+    const [deleteMessage, setDeleteMessage] = useState("");
+    const [deleteElement, setDeleteElement] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,7 +40,6 @@ function Task() {
                 );
 
                 console.log(individualTasksResponse.data.tasks);
-
                 setindividualTask(individualTasksResponse.data.tasks);
             } catch (err) {
                 console.error(err);
@@ -60,9 +63,37 @@ function Task() {
         );
     }
 
+    const handleDelete = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Fetch task title
+            const taskResponse = await axiosClient.post("/deleteEntiretask", {
+                task_id: id,
+                user_id: user.id,
+            });
+
+            setDeleteMessage(taskResponse.data.message);
+            setDeleteElement(true);
+
+            setTimeout(() => {
+                window.location = "/dashboard";
+            }, 2000);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <>
             <Navigator />
+
+            {deleteElement && (
+                <MiddleContainer>
+                    <p>{deleteMessage}</p>
+                    <p>Redirecting to Dashboard.</p>
+                </MiddleContainer>
+            )}
 
             <section className="container my-5">
                 <div className="d-flex flex-wrap justify-content-sm-between justify-content-center align-items-center gap-3">
@@ -74,8 +105,10 @@ function Task() {
                         Back to Tasks
                     </Link>
                     <div className="task-buttons d-flex gap-2">
-                        <div className="btn btn-primary-outline">Edit list</div>
-                        <div className="btn btn-primary">Add List</div>
+                        <div className="btn btn-primary">Edit list</div>
+                        <div className="btn btn-danger" onClick={handleDelete}>
+                            Delete List
+                        </div>
                     </div>
                 </div>
 
@@ -85,7 +118,9 @@ function Task() {
                     {individualTask.map((individualTask) => (
                         <div
                             key={individualTask.id}
-                            className="rounded border border-dark p-3 d-flex align-items-center shadow-sm bg-light-primary"
+                            className={`rounded border border-dark p-3 d-flex align-items-center shadow-sm ${
+                                individualTask.is_done ? "bg-light-primary" : ""
+                            } `}
                         >
                             <FontAwesomeIcon
                                 icon={
