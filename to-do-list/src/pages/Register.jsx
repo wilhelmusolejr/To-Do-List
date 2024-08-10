@@ -4,6 +4,10 @@ import axiosClient from "../axios-client";
 import { useStateContext } from "../contexts/ContextProvider";
 
 function Register() {
+    useEffect(() => {
+        document.title = "Register";
+    }, []);
+
     const { setUser, setToken } = useStateContext();
 
     const [name, setName] = useState("");

@@ -18,5 +18,7 @@ Route::post('/deleteEntiretask', [TaskController::class, 'deleteEntireTask']);
 Route::post('/updateTask', [TaskController::class, 'updateTask']);
 Route::post('/updateTaskStatus', [TaskController::class, 'updateTaskStatus']);
 
+
 Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+Route::post('/login', [AuthenticatedSessionController::class, 'login']);

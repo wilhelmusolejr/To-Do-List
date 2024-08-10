@@ -7,6 +7,8 @@ function Logout() {
     setUser(null);
     setToken(null);
 
+    window.location = "/login";
+
     return <></>;
 }
 

@@ -41,9 +41,8 @@ function Dashboard() {
                         };
                     });
 
-                    console.log(result);
-
                     setTasks(result);
+                    console.log(result);
                     setLoading(false); // Stop loading when data is fetched
                 })
                 .catch((err) => {
@@ -55,6 +54,11 @@ function Dashboard() {
             fetchUserTasks();
         }
     }, [user]);
+
+    // Page title
+    useEffect(() => {
+        document.title = `Dashboard | ${tasks.length} Tasks`;
+    }, [tasks]);
 
     const [selectedCategory, setSelectedCategory] = useState("");
     const [taskTitle, setTaskTitle] = useState("");
@@ -102,6 +106,9 @@ function Dashboard() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        document.querySelector(".btn-close-modal").click();
+        setLoading(true);
+
         await axiosClient
             .post("/tasks", {
                 category: selectedCategory,
@@ -110,40 +117,30 @@ function Dashboard() {
                 user_id: user.id,
             })
             .then((data) => {
-                const newTask = data.data.task_title;
-                const todayDate = new Date().toISOString().split("T")[0];
-                // Check if there's already a task group for today
-                const existingTaskGroupIndex = tasks.findIndex(
-                    (taskGroup) => taskGroup.date === todayDate
-                );
+                axiosClient
+                    .post("/userTaskTitles", {
+                        user_id: user.id,
+                    })
+                    .then((data) => {
+                        // Convert the object into an array of [date, tasks] pairs
+                        const dateTasksArray = Object.entries(
+                            data.data.task_titles
+                        );
 
-                if (existingTaskGroupIndex >= 0) {
-                    // If a group for today's date exists, add the new task to it
-                    const updatedTaskGroup = {
-                        ...tasks[existingTaskGroupIndex],
-                        tasks: [
-                            ...tasks[existingTaskGroupIndex].tasks,
-                            newTask,
-                        ],
-                    };
+                        // Use .map() to iterate over the array
+                        const result = dateTasksArray.map(([date, tasks]) => {
+                            return {
+                                date: date,
+                                tasks: tasks, // tasks is an array of task titles and tasks
+                            };
+                        });
 
-                    // Replace the old group with the updated one
-                    const updatedTasks = [
-                        ...tasks.slice(0, existingTaskGroupIndex),
-                        updatedTaskGroup,
-                        ...tasks.slice(existingTaskGroupIndex + 1),
-                    ];
-
-                    setTasks(updatedTasks);
-                } else {
-                    // If no group exists for today, create a new one
-                    const newTaskGroup = {
-                        date: todayDate,
-                        tasks: [newTask],
-                    };
-
-                    setTasks([...tasks, newTaskGroup]);
-                }
+                        setTasks(result);
+                        setLoading(false); // Stop loading when data is fetched
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
 
                 // Reset form fields after submission
                 setSelectedCategory("");
@@ -151,7 +148,6 @@ function Dashboard() {
                 setNewTasks([""]);
 
                 // Close the modal (optional)
-                document.querySelector(".btn-close").click();
             })
             .catch((err) => {
                 console.log(err);
@@ -274,7 +270,7 @@ function Dashboard() {
                                     ))}
 
                                     <div
-                                        className="text-center py-2 mb-3 border rounded btn-primary-outline"
+                                        className="text-center py-2 mb-3 border rounded btn-primary-outline cursor-pointer"
                                         onClick={addTask}
                                     >
                                         <FontAwesomeIcon icon={faPlus} />
@@ -292,20 +288,12 @@ function Dashboard() {
                         <div className="modal-footer">
                             <button
                                 type="button"
-                                className="btn btn-secondary"
+                                className="btn btn-secondary btn-close-modal"
                                 data-bs-dismiss="modal"
                             >
                                 Close
                             </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-close"
-                                onClick={() =>
-                                    document
-                                        .getElementById("add_task_form")
-                                        .submit()
-                                }
-                            >
+                            <button type="button" className="btn btn-primary">
                                 Add Task
                             </button>
                         </div>

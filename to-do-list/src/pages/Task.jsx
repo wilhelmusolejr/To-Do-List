@@ -70,6 +70,11 @@ function Task() {
         }
     }, [id]);
 
+    // Page title
+    useEffect(() => {
+        document.title = `Task | ${taskTitle}`;
+    }, [task]);
+
     // Show loading indicator if data is not yet loaded
     if (loading) {
         return (
