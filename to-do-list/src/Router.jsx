@@ -5,6 +5,7 @@ import GuestLayout from "./components/GuestLayout";
 import DefaultLayout from "./components/DefaultLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Logout from "./pages/Logout";
 
 const Router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ const Router = createBrowserRouter([
             {
                 path: "/task/:id",
                 element: <Task />,
+            },
+            {
+                path: "/logout",
+                element: <Logout />,
             },
         ],
     },

@@ -18,10 +18,13 @@ function Navigator() {
                             icon={faMoon}
                             className="cursor-pointer"
                         />
-                        <div className="d-flex gap-2 cursor-pointer">
+                        <Link
+                            to="/logout"
+                            className="d-flex text-dark gap-2 cursor-pointer"
+                        >
                             <FontAwesomeIcon icon={faArrowRightFromBracket} />{" "}
                             Signout
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </nav>

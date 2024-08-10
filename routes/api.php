@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,4 +17,6 @@ Route::post('/userTasks', [TaskController::class, 'getUserTasks']);
 Route::post('/deleteEntiretask', [TaskController::class, 'deleteEntireTask']);
 Route::post('/updateTask', [TaskController::class, 'updateTask']);
 Route::post('/updateTaskStatus', [TaskController::class, 'updateTaskStatus']);
+
 Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
