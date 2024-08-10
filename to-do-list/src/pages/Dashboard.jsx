@@ -42,7 +42,6 @@ function Dashboard() {
                     });
 
                     setTasks(result);
-                    console.log(result);
                     setLoading(false); // Stop loading when data is fetched
                 })
                 .catch((err) => {
@@ -152,6 +151,11 @@ function Dashboard() {
             .catch((err) => {
                 console.log(err);
             });
+    };
+
+    const formClick = (e) => {
+        console.log("e");
+        document.querySelector(".btn-submit").click();
     };
 
     // Show loading indicator if data is not yet loaded
@@ -279,7 +283,7 @@ function Dashboard() {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-submit d-none"
                                 >
                                     Add Task
                                 </button>
@@ -293,7 +297,10 @@ function Dashboard() {
                             >
                                 Close
                             </button>
-                            <button type="button" className="btn btn-primary">
+                            <button
+                                className="btn btn-primary"
+                                onClick={formClick}
+                            >
                                 Add Task
                             </button>
                         </div>
