@@ -5,7 +5,15 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquarePlus, faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import {
+    faSquarePlus,
+    faTrashCan,
+    faHeart,
+    faLemon,
+    faFaceGrinBeamSweat,
+    faPenToSquare,
+    faClone,
+} from "@fortawesome/free-regular-svg-icons";
 import { faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../components/Loader";
 
@@ -13,6 +21,15 @@ function Dashboard() {
     const { user } = useStateContext();
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true); // Add loading state
+    const [totalTask, setTotalTask] = useState(0);
+
+    const iconMap = {
+        faLemon: faLemon,
+        faHeart: faHeart,
+        faFaceGrinBeamSweat: faFaceGrinBeamSweat,
+        faPenToSquare: faPenToSquare,
+        faClone: faClone,
+    };
 
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -43,6 +60,7 @@ function Dashboard() {
 
                     setTasks(result);
                     setLoading(false); // Stop loading when data is fetched
+                    setTotalTask(data.data.total_task);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -56,7 +74,7 @@ function Dashboard() {
 
     // Page title
     useEffect(() => {
-        document.title = `Dashboard | ${tasks.length} Tasks`;
+        document.title = `Dashboard | ${totalTask} Tasks`;
     }, [tasks]);
 
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -110,7 +128,7 @@ function Dashboard() {
 
         await axiosClient
             .post("/tasks", {
-                category: selectedCategory,
+                category: selectedCategory ? selectedCategory : "none",
                 tasks: newTasks,
                 task_title: taskTitle,
                 user_id: user.id,
@@ -135,6 +153,7 @@ function Dashboard() {
                         });
 
                         setTasks(result);
+                        setTotalTask(data.data.total_task);
                         setLoading(false); // Stop loading when data is fetched
                     })
                     .catch((err) => {
@@ -222,16 +241,18 @@ function Dashboard() {
                                             value={selectedCategory} // Set the value of the select element
                                             onChange={handleCategory} // Handle change events
                                         >
-                                            <option value="">Category</option>{" "}
-                                            {/* Use empty string for default option */}
-                                            <option value="Health">
+                                            <option value="none">None</option>
+                                            <option value="health">
                                                 Health
                                             </option>
-                                            <option value="Grocery">
+                                            <option value="grocery">
                                                 Grocery
                                             </option>
-                                            <option value="Personal">
-                                                Personal
+                                            <option value="exercise">
+                                                Exercise
+                                            </option>
+                                            <option value="school">
+                                                School
                                             </option>
                                         </select>
                                     </div>
@@ -369,7 +390,10 @@ function Dashboard() {
                                                             "is_complete"
                                                         ]
                                                             ? faCheck
-                                                            : faSquarePlus
+                                                            : iconMap[
+                                                                  individualTask
+                                                                      .category
+                                                              ]
                                                     }
                                                 />
                                             </div>

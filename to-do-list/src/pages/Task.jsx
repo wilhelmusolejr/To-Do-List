@@ -333,7 +333,7 @@ function Task() {
                     </div>
                 </div>
 
-                <h2 className="my-4">{task.task_title}</h2>
+                <h2 className="my-4 text-capitalize">{task.task_title}</h2>
 
                 <div className="list-actual-task d-flex flex-column gap-3 ">
                     {individualTask.map((individualTask) => (
@@ -354,7 +354,7 @@ function Task() {
                                 }}
                                 className="me-3 text-dark-green fs-5 cursor-pointer"
                             />
-                            <p className="text-capitalize">
+                            <p className="text-paragraph">
                                 {individualTask.description}.
                             </p>
                         </div>

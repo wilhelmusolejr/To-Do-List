@@ -49,9 +49,34 @@ class TaskController extends Controller
             ->orderBy('created_at', 'desc') // Sort by creation date in descending order
             ->get();
 
+        $total_task = 0;
+
+        foreach ($taskTitles as $taskTitle) {
+            $total_task += $taskTitle->tasks->count();
+        }
+
         $temp_titles = [];
 
         foreach($taskTitles as $taskTitle) {
+
+            switch ($taskTitle->category) {
+                case 'health':
+                    $taskTitle->category = 'faHeart';
+                    break;
+                case 'grocery':
+                    $taskTitle->category = 'faLemon';
+                    break;
+                case 'exercise':
+                    $taskTitle->category = 'faFaceGrinBeamSweat';
+                    break;
+                case 'school':
+                    $taskTitle->category = 'faPenToSquare';
+                    break;
+                default:
+                    $taskTitle->category = 'faClone';
+                    break;
+            }
+
             $date = new DateTime($taskTitle->date);
             $formattedDate = $date->format('F d, Y'); // Formats to "August 09, 2024"
 
@@ -96,7 +121,8 @@ class TaskController extends Controller
         }
 
         return response()->json([
-            'task_titles' => $temp_titles
+            'task_titles' => $temp_titles,
+            'total_task' => $total_task
         ], 200);
     }
 
